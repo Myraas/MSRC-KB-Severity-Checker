@@ -29,8 +29,7 @@ function Query-KBSeverity {
             if (-not (Get-Module MSRCSecurityUpdates)) {
                 Install-Module MSRCSecurityUpdates -Force
             }
-            $ReportingMonth = $Global:ReportDate
-            $reportData = Get-MsrcCvrfDocument -ID $ReportingMonth | Get-MsrcCvrfAffectedSoftware
+            $reportData = Get-MsrcCvrfDocument -ID $Global:ReportDate | Get-MsrcCvrfAffectedSoftware
             $reportData | ConvertTo-Json | Set-Content -Path $Global:CacheFilePath
         }
 
