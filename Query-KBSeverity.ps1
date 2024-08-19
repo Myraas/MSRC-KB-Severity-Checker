@@ -9,7 +9,6 @@ $Global:UniqueKBFilePath = "C:\temp\UniqueKBs_$((Get-Date).ToString('yyyy-MMM'))
 Clear-Host
 Write-Host "MSRC Severity Results:"
 
-# Only check if the CacheFilePath exists if ForceUpdate is not explicitly set to true
 if (-not $Global:ForceUpdate) {
     if (-not (Test-Path $Global:CacheFilePath)) {
         $Global:ForceUpdate = $true
