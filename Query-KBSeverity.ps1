@@ -3,8 +3,10 @@ $Global:QueryAllUniqueKBs = $true
 
 $Global:ForceUpdate = $false
 $Global:ShowCachedResults = $false
-$Global:CacheFilePath = "C:\temp\SecurityUpdateCache_$((Get-Date).ToString('yyyy-MMM')).json"
-$Global:UniqueKBFilePath = "C:\temp\UniqueKBs_$((Get-Date).ToString('yyyy-MMM')).txt"
+
+$Global:ReportDate = (Get-Date).ToString("yyyy-MMM")
+$Global:CacheFilePath = "C:\temp\SecurityUpdateCache_$Global:ReportDate.json"
+$Global:UniqueKBFilePath = "C:\temp\UniqueKBs_$Global:ReportDate.txt"
 
 Clear-Host
 Write-Host "MSRC Severity Results:"
@@ -27,7 +29,7 @@ function Query-KBSeverity {
             if (-not (Get-Module MSRCSecurityUpdates)) {
                 Install-Module MSRCSecurityUpdates -Force
             }
-            $ReportingMonth = (Get-Date).ToString("yyyy-MMM")
+            $ReportingMonth = $Global:ReportDate
             $reportData = Get-MsrcCvrfDocument -ID $ReportingMonth | Get-MsrcCvrfAffectedSoftware
             $reportData | ConvertTo-Json | Set-Content -Path $Global:CacheFilePath
         }
