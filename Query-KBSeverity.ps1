@@ -1,12 +1,20 @@
 $Global:TargetKBs = @("KB5041585", "KB5040442", "KB5039212")
 $Global:QueryAllUniqueKBs = $true
 
-$Global:ForceUpdate = $false
+$Global:ForceUpdate = $true
 $Global:ShowCachedResults = $false
 
 $Global:ReportDate = (Get-Date).ToString("yyyy-MMM")
-$Global:CacheFilePath = "C:\temp\SecurityUpdateCache_$Global:ReportDate.json"
-$Global:UniqueKBFilePath = "C:\temp\UniqueKBs_$Global:ReportDate.txt"
+# $Global:ReportDate = "2024-Aug"
+
+# Detect the operating system and set the cache and KB file paths
+if ($IsWindows) {
+    $Global:CacheFilePath = "C:\temp\SecurityUpdateCache_$($Global:ReportDate).json"
+    $Global:UniqueKBFilePath = "C:\temp\UniqueKBs_$($Global:ReportDate).txt"
+} else {
+    $Global:CacheFilePath = "/tmp/SecurityUpdateCache_$($Global:ReportDate).json"
+    $Global:UniqueKBFilePath = "/tmp/UniqueKBs_$($Global:ReportDate).txt"
+}
 
 Clear-Host
 Write-Host "MSRC Severity Results:"
@@ -30,7 +38,7 @@ function Query-KBSeverity {
                 Install-Module MSRCSecurityUpdates -Force
             }
             $reportData = Get-MsrcCvrfDocument -ID $Global:ReportDate | Get-MsrcCvrfAffectedSoftware
-            $reportData | ConvertTo-Json | Set-Content -Path $Global:CacheFilePath
+            $reportData | ConvertTo-Json -Depth 5 | Set-Content -Path $Global:CacheFilePath
         }
 
         if ($Global:ForceUpdate) {
@@ -80,7 +88,7 @@ function Extract-UniqueKBs {
         $reportData
     )
 
-    $content = $reportData | ConvertTo-Json -Compress
+    $content = $reportData | ConvertTo-Json -Compress -Depth 5
     $matches = [regex]::Matches($content, '\bKB\d+\b')
     $uniqueKBs = $matches | ForEach-Object { $_.Value } | Sort-Object -Unique
     $uniqueKBs | Out-File -FilePath $Global:UniqueKBFilePath
